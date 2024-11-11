@@ -32,8 +32,8 @@ public class PersonServiceTest {
 
     @Test
     void testGetAllPersons() {
-        List<Person> persons = Arrays.asList(new Person("John", "Doe", new Date()), new Person("Jane", "Doe", new Date()));
-        Mockito.when(personRepository.findAll()).thenReturn(persons);
+        List<Person> people = Arrays.asList(new Person("John", "Doe", new Date()), new Person("Jane", "Doe", new Date()));
+        Mockito.when(personRepository.findAll()).thenReturn(people);
         List<Person> result = personService.getAllPersons();
         assertEquals(2, result.size());
         Mockito.verify(personRepository, Mockito.times(1)).findAll();

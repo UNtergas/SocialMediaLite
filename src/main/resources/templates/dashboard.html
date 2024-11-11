@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+<h1>Dashboard</h1>
+<div th:if="${currentUser != null}">
+    <p>Welcome, <span th:text="${currentUser.firstName}"></span>!</p>
+    <a th:href="@{/auth/logout}">Logout</a>
+</div>
+<div th:if="${currentUser == null}">
+    <p>You are not logged in.</p>
+    <a th:href="@{/auth/login}">Login</a>
+</div>
+</body>
+</html>

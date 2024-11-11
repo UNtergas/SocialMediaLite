@@ -1,20 +1,20 @@
 package org.socialnetwork.codebase.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.*;
 
 @Entity
-
 public class Person {
     @Id
     @GeneratedValue
     private UUID personID;
 
+    @Column(nullable = false, unique = true)
+    private String username;
+
+    @Column(nullable = false)
+    private String password;
 
     private String firstName;
 
@@ -23,11 +23,19 @@ public class Person {
     private Date dateOfBirth;
 
 
+    // All Relations where this person is the one who sends relation invitation
     @OneToMany(mappedBy = "personInit", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Relation> relationsInit = new HashSet<>();
 
+    // All Relations where this person is the one who receives relation invitation
     @OneToMany(mappedBy = "personRecv", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Relation> relationsRecv = new HashSet<>();
+
+    public Person(String username, String password) {
+        this("default", "default", new Date());
+        this.username = username;
+        this.password = password;
+    }
 
     public Person(String firstName, String lastName, Date dateOfBirth) {
         this.firstName = firstName;
@@ -73,6 +81,22 @@ public class Person {
 
     public UUID getPersonID() {
         return personID;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Set<Relation> getRelationsRecv() {

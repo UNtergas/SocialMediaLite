@@ -1,7 +1,6 @@
 package org.socialnetwork.codebase.repository;
 
 
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,10 +55,10 @@ public class RelationRepositoryTest {
 
     @Test
     public void testRelationExistBiDirectional(){
-        boolean exists = relationRepository.existsByPersonsAndType(personA,personB,RelationType.college);
+        boolean exists = relationRepository.existsByPersonsAndType(personA, personB,RelationType.college);
         assertTrue(exists);
 
-        exists = relationRepository.existsByPersonsAndType(personB,personA,RelationType.college);
+        exists = relationRepository.existsByPersonsAndType(personB, personA,RelationType.college);
         assertTrue(exists);
     }
 

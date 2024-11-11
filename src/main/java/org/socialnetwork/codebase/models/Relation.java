@@ -1,11 +1,7 @@
 package org.socialnetwork.codebase.models;
 
 import jakarta.persistence.*;
-import org.socialnetwork.codebase.models.RelationType;
-
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -48,13 +44,13 @@ public class Relation {
 
     @PreRemove
     private void removeRelation() {
-        if(personInit!=null) {
+        if(personInit !=null) {
             personInit.getRelationsInit().remove(this);
-            this.personInit=null;
+            this.personInit =null;
         }
-        if(personRecv!=null) {
+        if(personRecv !=null) {
             personRecv.getRelationsInit().remove(this);
-            this.personRecv=null;
+            this.personRecv =null;
         }
     }
 

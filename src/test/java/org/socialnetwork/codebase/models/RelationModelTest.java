@@ -15,7 +15,7 @@ public class RelationModelTest {
     public void setUp() {
         person = new Person("John", "Doe", new Date());
         person2 = new Person("Jane", "Macarel", new Date());
-        relation = new Relation(RelationType.friend,person,person2);
+        relation = new Relation(RelationType.friend, person, person2);
     }
     @Test
     public void testRelationInit() {

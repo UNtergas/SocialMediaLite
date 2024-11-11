@@ -6,9 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 
@@ -25,8 +23,11 @@ public class Person {
     private Date dateOfBirth;
 
 
-    @ManyToMany(mappedBy = "persons", cascade = CascadeType.ALL)
-    private Set<Relation> relations;
+    @OneToMany(mappedBy = "personInit", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Relation> relationsInit = new HashSet<>();
+
+    @OneToMany(mappedBy = "personRecv", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Relation> relationsRecv = new HashSet<>();
 
     public Person(String firstName, String lastName, Date dateOfBirth) {
         this.firstName = firstName;
@@ -37,15 +38,49 @@ public class Person {
         this.firstName = "Empty";
     }
 
-    public Person(String firstName, String lastName, Date dateOfBirth, Set<Relation> relations) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.dateOfBirth = dateOfBirth;
-        this.relations = relations;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if(!(o instanceof Person)) return false;
+        Person person = (Person) o;
+        return Objects.equals(personID, person.personID);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(personID);
+    }
+    @PreRemove
+    private void removePerson(){
+        if(relationsInit!=null) {
+            for (Relation relation : relationsInit) {
+                relation.getPersonRecv().getRelationsRecv().remove(relation);
+                relation.setPersonInit(null);
+                relation.setPersonRecv(null);
+            }
+            relationsInit.clear();
+        }
+
+        if (relationsRecv != null) {
+            for(Relation relation : relationsRecv){
+                relation.getPersonInit().getRelationsInit().remove(relation);
+                relation.setPersonInit(null);
+                relation.setPersonRecv(null);
+            }
+            relationsRecv.clear();
+        }
     }
 
     public UUID getPersonID() {
         return personID;
+    }
+
+    public Set<Relation> getRelationsRecv() {
+        return relationsRecv;
+    }
+
+    public Set<Relation> getRelationsInit() {
+        return relationsInit;
     }
 
     public String getFirstName() {
@@ -60,9 +95,6 @@ public class Person {
         return dateOfBirth;
     }
 
-    public Set<Relation> getRelations() {
-        return relations;
-    }
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
@@ -74,5 +106,26 @@ public class Person {
 
     public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public void addRelationInitiation(Relation relation) {
+        relationsInit.add(relation);
+        relation.setPersonInit(this);
+    }
+    public void addRelationReceived(Relation relation) {
+        relationsRecv.add(relation);
+        relation.setPersonRecv(this);
+    }
+    public void removeRelationInitiation(Relation relation) {
+        relationsInit.remove(relation);
+        relation.getPersonRecv().getRelationsRecv().remove(relation);
+        relation.setPersonRecv(null);
+        relation.setPersonInit(null);
+    }
+    public void removeRelationReceived(Relation relation) {
+        relationsRecv.remove(relation);
+        relation.getPersonInit().getRelationsInit().remove(relation);
+        relation.setPersonInit(null);
+        relation.setPersonRecv(null);
     }
 }

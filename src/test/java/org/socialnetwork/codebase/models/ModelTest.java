@@ -7,6 +7,9 @@ import org.junit.platform.suite.api.Suite;
 
 
 @Suite
-@SelectClasses({PersonModelTest.class,RelationModelTest.class})
+@SelectClasses({
+        PersonModelTest.class,
+        RelationModelTest.class,
+})
 public class ModelTest {
 }

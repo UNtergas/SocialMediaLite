@@ -1,5 +1,6 @@
 package org.socialnetwork.codebase.service;
 
+import jakarta.transaction.Transactional;
 import org.socialnetwork.codebase.models.Person;
 import org.socialnetwork.codebase.models.Relation;
 import org.socialnetwork.codebase.models.RelationType;
@@ -8,9 +9,7 @@ import org.socialnetwork.codebase.repository.RelationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class PersonService implements PersonServiceInterface {
@@ -22,6 +21,11 @@ public class PersonService implements PersonServiceInterface {
     public PersonService(PersonRepository personRepository, RelationRepository relationRepository) {
         this.personRepository = personRepository;
         this.relationRepository = relationRepository;
+    }
+
+    @Override
+    public List<Person> getAllPersons() {
+        return personRepository.findAll();
     }
 
     @Override
@@ -62,24 +66,45 @@ public class PersonService implements PersonServiceInterface {
     }
 
     @Override
+    public List<Relation> getAllRelations(UUID personID) {
+        Person person = personRepository.findById(personID)
+                .orElseThrow(() -> new RuntimeException("Person not found"));
+        List<Relation> allRelations = new ArrayList<>();
+        allRelations.addAll(person.getRelationsInit());
+        allRelations.addAll(person.getRelationsRecv());
+        return allRelations;
+    }
+
+
+    boolean relationExists(Person person1 , Person person2, RelationType relationType) {
+        return relationRepository.existsByPersonsAndType(person1, person2, relationType);
+    }
+    @Override
+    @Transactional
     public Relation createRelation(UUID person1Id, UUID person2Id, RelationType relationType) {
+
         Person person1 = personRepository.findById(person1Id)
                 .orElseThrow(() -> new RuntimeException("Person1 not found"));
         Person person2 = personRepository.findById(person2Id)
                 .orElseThrow(() -> new RuntimeException("Person2 not found"));
-        Relation relation = new Relation(relationType, person1, person2);
-        relationRepository.save(relation);
 
-        person1.getRelations().add(relation);
-        person2.getRelations().add(relation);
+        if(person1Id.compareTo(person2Id) >0) {
+            Person temp = person1;
+            person1 = person2;
+            person2 = temp;
+        }
+        if(!relationExists(person1, person2, relationType)) {
+            Relation relation = new Relation(relationType, person1, person2);
+            relationRepository.save(relation);
+            return relation;
 
-        personRepository.save(person1);
-        personRepository.save(person2);
-
-        return relation;
+        }
+        throw new RuntimeException("Relation already exists");
     }
 
+
     @Override
+    @Transactional
     public Relation updateRelationType(UUID relationID, RelationType newRelationType) {
         Relation relation = relationRepository.findById(relationID)
                 .orElseThrow(() -> new RuntimeException("Relation not found"));
@@ -89,14 +114,12 @@ public class PersonService implements PersonServiceInterface {
     }
 
     @Override
+    @Transactional
     public void deleteRelation(UUID relationID) {
-         Relation relation = relationRepository.findById(relationID)
+        Relation relation = relationRepository.findById(relationID)
                 .orElseThrow(() -> new RuntimeException("Relation not found"));
 
-        relation.getPerson1().getRelations().remove(relation);
-        relation.getPerson2().getRelations().remove(relation);
-
-        relationRepository.delete(relation);
+        relationRepository.deleteById(relationID);
     }
 
 

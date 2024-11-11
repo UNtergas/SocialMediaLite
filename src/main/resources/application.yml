@@ -1,5 +1,8 @@
 
 spring:
+  test:
+    database:
+      replace: none
   config:
       import: optional:file:.env[.properties]
   application:
@@ -11,6 +14,7 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD:}
   jpa:
     database-platform: ${SPRING_JPA_DATABASE_PLATFORM}
+    show-sql: true
   h2:
     console:
       enabled: ${SPRING_H2_CONSOLE_ENABLED}

@@ -2,6 +2,9 @@ package org.socialnetwork.codebase.models;
 
 import jakarta.persistence.*;
 import org.socialnetwork.codebase.models.RelationType;
+
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -11,45 +14,52 @@ public class Relation {
     @GeneratedValue
     private UUID relationID;
 
-
+    @Enumerated(EnumType.STRING)
     private RelationType relationType;
 
-    @ManyToMany
-    @JoinTable(
-            name = "relation_person",
-            joinColumns = @JoinColumn(name = "relation_id"),
-            inverseJoinColumns = @JoinColumn(name = "person_id")
-    )
-    private Set<Person> persons;
+    @ManyToOne
+    @JoinColumn(name="personInit_id")
+    private Person personInit;
 
+    @ManyToOne
+    @JoinColumn(name="personRecv_id")
+    private Person personRecv;
 
-    @OneToOne
-    @JoinColumn(name="person1_id")
-    private Person person1;
-
-
-    @OneToOne
-    @JoinColumn(name="person2_id")
-    private Person person2;
-
-    public Relation(RelationType relationType) {
-        this.relationType = relationType;
-    }
     public Relation(RelationType relationType, Person person1, Person person2) {
         this.relationType = relationType;
-        this.person1 = person1;
-        this.person2 = person2;
+        this.personInit = person1;
+        this.personRecv = person2;
+
+        person1.addRelationInitiation(this);
+        person2.addRelationReceived(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Relation)) return false;
+        Relation relation = (Relation) o;
+        return Objects.equals(relationID, relation.relationID);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(relationID);
+    }
+
+    @PreRemove
+    private void removeRelation() {
+        if(personInit!=null) {
+            personInit.getRelationsInit().remove(this);
+            this.personInit=null;
+        }
+        if(personRecv!=null) {
+            personRecv.getRelationsInit().remove(this);
+            this.personRecv=null;
+        }
     }
 
     public Relation() {
         this.relationType = RelationType.friend;
-    }
-
-    public Relation(RelationType relationType, Set<Person> persons, Person person1, Person person2) {
-        this.relationType = relationType;
-        this.persons = persons;
-        this.person1 = person1;
-        this.person2 = person2;
     }
 
     public UUID getRelationID() {
@@ -60,27 +70,25 @@ public class Relation {
         return relationType;
     }
 
-    public Set<Person> getPersons() {
-        return persons;
+    public Person getPersonRecv() {
+        return personRecv;
     }
 
-    public Person getPerson1() {
-        return person1;
+    public Person getPersonInit() {
+        return personInit;
     }
 
-    public Person getPerson2() {
-        return person2;
+    public void setPersonRecv(Person personRecv) {
+        this.personRecv = personRecv;
+    }
+
+    public void setPersonInit(Person personInit) {
+        this.personInit = personInit;
     }
 
     public void setRelationType(RelationType relationType) {
         this.relationType = relationType;
     }
 
-    public void setPerson1(Person person1) {
-        this.person1 = person1;
-    }
 
-    public void setPerson2(Person person2) {
-        this.person2 = person2;
-    }
 }

@@ -17,6 +17,6 @@ You can run this application using one of these options:
 The application will be run on port 8080: http://localhost:8080
 
 #### How to access to database
-path: http://localhost:8080/h2-console
-username: root
-password: root
+- path: http://localhost:8080/h2-console
+- username: root
+- password: root

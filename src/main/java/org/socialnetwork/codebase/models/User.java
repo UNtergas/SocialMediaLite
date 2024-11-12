@@ -38,6 +38,13 @@ public class User {
         this.password = password;
     }
 
+    public User(String username, String password, String firstName, String lastName, Date dateOfBirth) {
+        this(username, password);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.dateOfBirth = dateOfBirth;
+    }
+
     public User(String firstName, String lastName, Date dateOfBirth) {
         this.firstName = firstName;
         this.lastName = lastName;

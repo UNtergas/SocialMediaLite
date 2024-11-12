@@ -15,8 +15,8 @@ import java.util.*;
 @Service
 public class UserService implements UserServiceInterface {
 
-    private UserRepository userRepository;
-    private RelationRepository relationRepository;
+    private final UserRepository userRepository;
+    private final RelationRepository relationRepository;
 
     @Autowired
     public UserService(UserRepository userRepository, RelationRepository relationRepository) {

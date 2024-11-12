@@ -14,20 +14,20 @@ public class Relation {
     private RelationType relationType;
 
     @ManyToOne
-    @JoinColumn(name="personInit_id")
-    private Person personInit;
+    @JoinColumn(name="userInit_id")
+    private User userInit;
 
     @ManyToOne
-    @JoinColumn(name="personRecv_id")
-    private Person personRecv;
+    @JoinColumn(name="userRecv_id")
+    private User userRecv;
 
-    public Relation(RelationType relationType, Person person1, Person person2) {
+    public Relation(RelationType relationType, User user1, User user2) {
         this.relationType = relationType;
-        this.personInit = person1;
-        this.personRecv = person2;
+        this.userInit = user1;
+        this.userRecv = user2;
 
-        person1.addRelationInitiation(this);
-        person2.addRelationReceived(this);
+        user1.addRelationInitiation(this);
+        user2.addRelationReceived(this);
     }
 
     @Override
@@ -44,13 +44,13 @@ public class Relation {
 
     @PreRemove
     private void removeRelation() {
-        if(personInit !=null) {
-            personInit.getRelationsInit().remove(this);
-            this.personInit =null;
+        if(userInit !=null) {
+            userInit.getRelationsInit().remove(this);
+            this.userInit =null;
         }
-        if(personRecv !=null) {
-            personRecv.getRelationsInit().remove(this);
-            this.personRecv =null;
+        if(userRecv !=null) {
+            userRecv.getRelationsInit().remove(this);
+            this.userRecv =null;
         }
     }
 
@@ -66,20 +66,20 @@ public class Relation {
         return relationType;
     }
 
-    public Person getPersonRecv() {
-        return personRecv;
+    public User getUserRecv() {
+        return userRecv;
     }
 
-    public Person getPersonInit() {
-        return personInit;
+    public User getUserInit() {
+        return userInit;
     }
 
-    public void setPersonRecv(Person personRecv) {
-        this.personRecv = personRecv;
+    public void setUserRecv(User userRecv) {
+        this.userRecv = userRecv;
     }
 
-    public void setPersonInit(Person personInit) {
-        this.personInit = personInit;
+    public void setUserInit(User userInit) {
+        this.userInit = userInit;
     }
 
     public void setRelationType(RelationType relationType) {

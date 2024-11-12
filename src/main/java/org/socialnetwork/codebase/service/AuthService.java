@@ -1,36 +1,37 @@
 package org.socialnetwork.codebase.service;
 
 import org.socialnetwork.codebase.exceptions.UsernameAlreadyTakenException;
-import org.socialnetwork.codebase.models.Person;
-import org.socialnetwork.codebase.repository.PersonRepository;
+import org.socialnetwork.codebase.models.User;
+import org.socialnetwork.codebase.repository.UserRepository;
+import org.socialnetwork.codebase.service.interfaces.AuthServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class AuthService implements AuthServiceInterface{
-    private final PersonRepository personRepository;
+public class AuthService implements AuthServiceInterface {
+    private final UserRepository userRepository;
 
     @Autowired
-    public AuthService(PersonRepository personRepository) {
-        this.personRepository = personRepository;
+    public AuthService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
-    public Person registerPerson(String username, String password) {
-        if (personRepository.findByUsername(username).isPresent()) {
+    public User registerUser(String username, String password) {
+        if (userRepository.findByUsername(username).isPresent()) {
             throw new UsernameAlreadyTakenException("Username is already taken");
         }
-        Person person = new Person(username, password);
-        return this.personRepository.save(person);
+        User user = new User(username, password);
+        return this.userRepository.save(user);
     }
 
     @Override
-    public Person authenticatePerson(String username, String password) {
-        Optional<Person> personOptional = this.personRepository.findByUsername(username);
-        if(personOptional.isPresent() && personOptional.get().getPassword().equals(password)) {
-            return personOptional.get();
+    public User authenticateUser(String username, String password) {
+        Optional<User> userOptional = this.userRepository.findByUsername(username);
+        if(userOptional.isPresent() && userOptional.get().getPassword().equals(password)) {
+            return userOptional.get();
         }
         return null;
     }

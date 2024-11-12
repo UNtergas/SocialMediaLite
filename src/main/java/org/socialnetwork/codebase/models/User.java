@@ -5,10 +5,11 @@ import jakarta.persistence.*;
 import java.util.*;
 
 @Entity
-public class Person {
+@Table(name = "app_user")
+public class User {
     @Id
     @GeneratedValue
-    private UUID personID;
+    private UUID userID;
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -23,64 +24,64 @@ public class Person {
     private Date dateOfBirth;
 
 
-    // All Relations where this person is the one who sends relation invitation
-    @OneToMany(mappedBy = "personInit", cascade = CascadeType.ALL, orphanRemoval = true)
+    // All Relations where this user is the one who sends relation invitation
+    @OneToMany(mappedBy = "userInit", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Relation> relationsInit = new HashSet<>();
 
-    // All Relations where this person is the one who receives relation invitation
-    @OneToMany(mappedBy = "personRecv", cascade = CascadeType.ALL, orphanRemoval = true)
+    // All Relations where this user is the one who receives relation invitation
+    @OneToMany(mappedBy = "userRecv", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Relation> relationsRecv = new HashSet<>();
 
-    public Person(String username, String password) {
+    public User(String username, String password) {
         this("default", "default", new Date());
         this.username = username;
         this.password = password;
     }
 
-    public Person(String firstName, String lastName, Date dateOfBirth) {
+    public User(String firstName, String lastName, Date dateOfBirth) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
     }
-    public Person() {
+    public User() {
         this.firstName = "Empty";
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if(!(o instanceof Person)) return false;
-        Person person = (Person) o;
-        return Objects.equals(personID, person.personID);
+        if(!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(userID, user.userID);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(personID);
+        return Objects.hash(userID);
     }
     @PreRemove
-    private void removePerson(){
+    private void removeUser(){
         if(relationsInit!=null) {
             for (Relation relation : relationsInit) {
-                relation.getPersonRecv().getRelationsRecv().remove(relation);
-                relation.setPersonInit(null);
-                relation.setPersonRecv(null);
+                relation.getUserRecv().getRelationsRecv().remove(relation);
+                relation.setUserInit(null);
+                relation.setUserRecv(null);
             }
             relationsInit.clear();
         }
 
         if (relationsRecv != null) {
             for(Relation relation : relationsRecv){
-                relation.getPersonInit().getRelationsInit().remove(relation);
-                relation.setPersonInit(null);
-                relation.setPersonRecv(null);
+                relation.getUserInit().getRelationsInit().remove(relation);
+                relation.setUserInit(null);
+                relation.setUserRecv(null);
             }
             relationsRecv.clear();
         }
     }
 
-    public UUID getPersonID() {
-        return personID;
+    public UUID getUserID() {
+        return userID;
     }
 
     public String getPassword() {
@@ -134,22 +135,22 @@ public class Person {
 
     public void addRelationInitiation(Relation relation) {
         relationsInit.add(relation);
-        relation.setPersonInit(this);
+        relation.setUserInit(this);
     }
     public void addRelationReceived(Relation relation) {
         relationsRecv.add(relation);
-        relation.setPersonRecv(this);
+        relation.setUserRecv(this);
     }
     public void removeRelationInitiation(Relation relation) {
         relationsInit.remove(relation);
-        relation.getPersonRecv().getRelationsRecv().remove(relation);
-        relation.setPersonRecv(null);
-        relation.setPersonInit(null);
+        relation.getUserRecv().getRelationsRecv().remove(relation);
+        relation.setUserRecv(null);
+        relation.setUserInit(null);
     }
     public void removeRelationReceived(Relation relation) {
         relationsRecv.remove(relation);
-        relation.getPersonInit().getRelationsInit().remove(relation);
-        relation.setPersonInit(null);
-        relation.setPersonRecv(null);
+        relation.getUserInit().getRelationsInit().remove(relation);
+        relation.setUserInit(null);
+        relation.setUserRecv(null);
     }
 }

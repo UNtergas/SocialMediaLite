@@ -8,7 +8,7 @@ import org.junit.platform.suite.api.Suite;
 
 @Suite
 @SelectClasses({
-        PersonModelTest.class,
+        UserModelTest.class,
         RelationModelTest.class,
 })
 public class ModelTest {

@@ -1,6 +1,6 @@
 package org.socialnetwork.codebase.repository;
 
-import org.socialnetwork.codebase.models.Person;
+import org.socialnetwork.codebase.models.User;
 import org.socialnetwork.codebase.models.RelationType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,10 +14,10 @@ import java.util.UUID;
 public interface RelationRepository extends JpaRepository<Relation, UUID> {
 
      @Query("SELECT COUNT(r) > 0 FROM Relation r WHERE " +
-           "(r.personInit = :person1 AND r.personRecv = :person2 AND r.relationType = :type) " +
-           "OR (r.personInit = :person2 AND r.personRecv = :person1 AND r.relationType = :type)")
-     boolean existsByPersonsAndType(@Param("person1") Person personInit,
-                                   @Param("person2") Person personRecv,
-                                   @Param("type") RelationType type);
+           "(r.userInit = :userInit AND r.userRecv = :userRecv AND r.relationType = :type) " +
+           "OR (r.userInit = :userRecv AND r.userRecv = :userInit AND r.relationType = :type)")
+     boolean existsByUsersAndType(@Param("userInit") User userInit,
+                                  @Param("userRecv") User userRecv,
+                                  @Param("type") RelationType type);
 
 }

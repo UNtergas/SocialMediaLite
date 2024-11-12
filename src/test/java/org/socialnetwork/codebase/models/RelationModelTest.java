@@ -7,24 +7,24 @@ import java.util.Date;
 
 public class RelationModelTest {
 
-    private Person person;
-    private Person person2;
+    private User user;
+    private User user2;
     private Relation relation;
 
     @BeforeEach
     public void setUp() {
-        person = new Person("John", "Doe", new Date());
-        person2 = new Person("Jane", "Macarel", new Date());
-        relation = new Relation(RelationType.friend, person, person2);
+        user = new User("John", "Doe", new Date());
+        user2 = new User("Jane", "Macarel", new Date());
+        relation = new Relation(RelationType.friend, user, user2);
     }
     @Test
     public void testRelationInit() {
         assertEquals(RelationType.friend, relation.getRelationType());
-        assertEquals(person,relation.getPersonInit());
-        assertEquals(person2,relation.getPersonRecv());
+        assertEquals(user,relation.getUserInit());
+        assertEquals(user2,relation.getUserRecv());
 
-        assertTrue(person.getRelationsInit().contains(relation));
-        assertTrue(person2.getRelationsRecv().contains(relation));
+        assertTrue(user.getRelationsInit().contains(relation));
+        assertTrue(user2.getRelationsRecv().contains(relation));
     }
     @Test
     public void testSetRelationType(){

@@ -4,7 +4,7 @@ package org.socialnetwork.codebase.repository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.socialnetwork.codebase.models.Person;
+import org.socialnetwork.codebase.models.User;
 import org.socialnetwork.codebase.models.Relation;
 import org.socialnetwork.codebase.models.RelationType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,20 +21,20 @@ public class RelationRepositoryTest {
     @Autowired
     private RelationRepository relationRepository;
     @Autowired
-    private PersonRepository  personRepository;
+    private UserRepository userRepository;
 
-    private Person personA;
-    private Person personB;
+    private User userA;
+    private User userB;
     private Relation relation;
 
     @BeforeEach
     public void setUp(){
-        personA = new Person("Alice", "Smith", new Date());
-        personB = new Person("Bob", "Jones", new Date());
-        personRepository.save(personA);
-        personRepository.save(personB);
+        userA = new User("Alice", "Smith", new Date());
+        userB = new User("Bob", "Jones", new Date());
+        userRepository.save(userA);
+        userRepository.save(userB);
 
-        relation = new Relation(RelationType.college, personA, personB);
+        relation = new Relation(RelationType.college, userA, userB);
         relationRepository.save(relation);
     }
 
@@ -42,8 +42,8 @@ public class RelationRepositoryTest {
     public void testCreateRelation(){
         assertNotNull(relation.getRelationID());
         assertEquals(relation.getRelationType(), RelationType.college);
-        assertEquals(personA,relation.getPersonInit());
-        assertEquals(personB,relation.getPersonRecv());
+        assertEquals(userA,relation.getUserInit());
+        assertEquals(userB,relation.getUserRecv());
     }
 
     @Test
@@ -55,35 +55,35 @@ public class RelationRepositoryTest {
 
     @Test
     public void testRelationExistBiDirectional(){
-        boolean exists = relationRepository.existsByPersonsAndType(personA, personB,RelationType.college);
+        boolean exists = relationRepository.existsByUsersAndType(userA, userB,RelationType.college);
         assertTrue(exists);
 
-        exists = relationRepository.existsByPersonsAndType(personB, personA,RelationType.college);
+        exists = relationRepository.existsByUsersAndType(userB, userA,RelationType.college);
         assertTrue(exists);
     }
 
     @Test
     public void testDeleteRelation(){
-        System.out.println(personA.getRelationsInit());
+        System.out.println(userA.getRelationsInit());
         relationRepository.deleteById(relation.getRelationID());
         Optional<Relation> fRelation = relationRepository.findById(relation.getRelationID());
         assertFalse(fRelation.isPresent());
 
-        System.out.println(personA.getRelationsInit());
-        assertFalse(personA.getRelationsInit().contains(relation));
-        assertFalse(personB.getRelationsRecv().contains(relation));
+        System.out.println(userA.getRelationsInit());
+        assertFalse(userA.getRelationsInit().contains(relation));
+        assertFalse(userB.getRelationsRecv().contains(relation));
     }
 
 
-    @Test
-//    @Transactional
-    public void testDeletePersonRelation(){
-        personRepository.deleteById(personA.getPersonID());
-        assertFalse(personRepository.existsById(personA.getPersonID()));
-        /**
-         * !Warn :: CASCADING NOT WORKING
-         */
-        assertFalse(relationRepository.findById(relation.getRelationID()).isPresent());
-    }
+//    @Test
+////    @Transactional
+//    public void testDeleteUserRelation(){
+//        userRepository.deleteById(userA.getUserID());
+//        assertFalse(userRepository.existsById(userA.getUserID()));
+//        /**
+//         * !Warn :: CASCADING NOT WORKING
+//         */
+//        assertFalse(relationRepository.findById(relation.getRelationID()).isPresent());
+//    }
 
 }

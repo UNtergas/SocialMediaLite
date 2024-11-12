@@ -6,7 +6,7 @@ import org.junit.platform.suite.api.Suite;
 
 @Suite
 @SelectClasses({
-        PersonRepositoryTest.class,
+        UserRepositoryTest.class,
         RelationRepositoryTest.class,
 })
 public class RepositoryTest {

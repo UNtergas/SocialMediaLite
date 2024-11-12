@@ -5,7 +5,7 @@ import org.junit.platform.suite.api.Suite;
 
 @Suite
 @SelectClasses({
-        PersonServiceTest.class,
+        UserServiceTest.class,
 })
 public class ServiceTest {
 }

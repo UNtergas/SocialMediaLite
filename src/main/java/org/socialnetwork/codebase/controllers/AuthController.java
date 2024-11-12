@@ -2,7 +2,7 @@ package org.socialnetwork.codebase.controllers;
 
 import jakarta.servlet.http.HttpSession;
 import org.socialnetwork.codebase.exceptions.UsernameAlreadyTakenException;
-import org.socialnetwork.codebase.models.Person;
+import org.socialnetwork.codebase.models.User;
 import org.socialnetwork.codebase.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,8 +29,8 @@ public class AuthController {
     @PostMapping("/signup")
     public String signup(@RequestParam String username, @RequestParam String password, Model model, HttpSession session) {
         try {
-            Person registeredPerson = this.authService.registerPerson(username, password);
-            session.setAttribute("currentUser", registeredPerson);
+            User registeredUser = this.authService.registerUser(username, password);
+            session.setAttribute("currentUser", registeredUser);
             return "redirect:/";
         } catch (UsernameAlreadyTakenException usernameAlreadyTakenException) {
             model.addAttribute("error", usernameAlreadyTakenException.getMessage());
@@ -40,9 +40,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public String login(@RequestParam String username, @RequestParam String password, Model model) {
-        Person authenticatedPerson = this.authService.authenticatePerson(username, password);
-        if (authenticatedPerson != null) {
-            model.addAttribute("currentUser", authenticatedPerson);
+        User authenticatedUser = this.authService.authenticateUser(username, password);
+        if (authenticatedUser != null) {
+            model.addAttribute("currentUser", authenticatedUser);
             return "redirect:/";
         }
 

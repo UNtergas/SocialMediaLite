@@ -1,5 +1,11 @@
 ## Software Component Module Project - INSA
+##### Ke An NGUYEN - Anh Tuan NGUYEN 
+##### 5A STI Option ASL
+
+#### Introduction
 This is MVC application using Spring, Thymeleaf, h2 (in-memory database)
+
+github: https://github.com/UNtergas/SocialMediaLite
 
 #### Configuration
 - As this is an example project, we push .env file to github.
@@ -8,6 +14,8 @@ This is MVC application using Spring, Thymeleaf, h2 (in-memory database)
 
 #### Test
 We test the CRUD functionality for all application models. The test is in `src/test`
+
+To run test: `mvn test` or righting click on test -> run
 
 #### How to run
 You can run this application using one of these options:

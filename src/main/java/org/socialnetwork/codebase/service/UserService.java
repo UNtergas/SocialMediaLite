@@ -30,35 +30,8 @@ public class UserService implements UserServiceInterface {
     }
 
     @Override
-    public User createUser(String firstName, String lastName, Date dateOfBirth) {
-        User user = new User(firstName, lastName, dateOfBirth);
-        return userRepository.save(user);
-    }
-
-    @Override
     public Optional<User> getUser(UUID userID) {
         return userRepository.findById(userID);
-    }
-
-    @Override
-    public User updateUser(UUID userID, String firstName, String lastName, Date dateOfBirth) {
-        User user = userRepository.findById(userID)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setDateOfBirth(dateOfBirth);
-        return userRepository.save(user);
-    }
-
-    @Override
-    public User patchUser(UUID userID, Optional<String> firstName, Optional<String> lastName, Optional<Date> dateOfBirth) {
-        User user = userRepository.findById(userID)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        firstName.ifPresent(user::setFirstName);
-        lastName.ifPresent(user::setLastName);
-        dateOfBirth.ifPresent(user::setDateOfBirth);
-        return userRepository.save(user);
     }
 
     @Override

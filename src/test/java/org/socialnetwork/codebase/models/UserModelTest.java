@@ -10,23 +10,8 @@ public class UserModelTest {
     private User user2;
     @BeforeEach
     public void setUp() {
-        user = new User("John", "Doe", new Date());
-        user2 = new User("Jane", "Macarel", new Date());
-    }
-    @Test
-    public void testUserCreation() {
-
-        assertNotNull(user);
-        assertEquals("John", user.getFirstName());
-        assertEquals("Doe", user.getLastName());
-    }
-
-    @Test
-    public void testGetterSetter() {
-        assertEquals("John", user.getFirstName());
-        assertEquals("Doe", user.getLastName());
-        user.setLastName("Doe2");
-        assertEquals("Doe2", user.getLastName());
+        user = new User("kan", "qwerty");
+        user2 = new User("tan", "qwerty");
     }
 
     @Test

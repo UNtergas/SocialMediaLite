@@ -6,15 +6,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Date;
 
 public class RelationModelTest {
-
     private User user;
     private User user2;
     private Relation relation;
 
     @BeforeEach
     public void setUp() {
-        user = new User("John", "Doe", new Date());
-        user2 = new User("Jane", "Macarel", new Date());
+        user = new User("kan", "qwerty");
+        user2 = new User("tan", "qwerty");
         relation = new Relation(RelationType.friend, user, user2);
     }
     @Test

@@ -21,13 +21,13 @@ public class Relation {
     @JoinColumn(name="userRecv_id")
     private User userRecv;
 
-    public Relation(RelationType relationType, User user1, User user2) {
+    public Relation(RelationType relationType, User userInit, User userRecv) {
         this.relationType = relationType;
-        this.userInit = user1;
-        this.userRecv = user2;
+        this.userInit = userInit;
+        this.userRecv = userRecv;
 
-        user1.addRelationInitiation(this);
-        user2.addRelationReceived(this);
+        userInit.addRelationInitiation(this);
+        userRecv.addRelationReceived(this);
     }
 
     @Override
@@ -35,23 +35,22 @@ public class Relation {
         if (this == o) return true;
         if (!(o instanceof Relation)) return false;
         Relation relation = (Relation) o;
-        return Objects.equals(relationID, relation.relationID);
+        return this.relationID.toString().equals(relation.relationID.toString());
     }
     @Override
     public int hashCode() {
         return Objects.hash(relationID);
     }
 
+    @Override
+    public String toString() {
+        return relationID.toString() + " " + relationType.toString() + " " + userInit.toString() + " " + userRecv.toString();
+    }
+
     @PreRemove
     private void removeRelation() {
-        if(userInit !=null) {
-            userInit.getRelationsInit().remove(this);
-            this.userInit =null;
-        }
-        if(userRecv !=null) {
-            userRecv.getRelationsInit().remove(this);
-            this.userRecv =null;
-        }
+        this.setUserInit(null);
+        this.setUserRecv(null);
     }
 
     public Relation() {

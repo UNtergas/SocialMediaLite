@@ -10,10 +10,7 @@ public interface UserServiceInterface {
 
       public List<User> getAllUsers();
 
-      public User createUser(String firstName, String lastName, Date dateOfBirth);
       public Optional<User> getUser(UUID userID);
-      public User updateUser(UUID userID, String firstName, String lastName, Date dateOfBirth);
-      public User patchUser(UUID userID, Optional<String> firstName, Optional<String> lastName, Optional<Date> dateOfBirth);
       public void deleteUser(UUID userID);
 
       public List<Relation> getAllRelations(UUID userID);

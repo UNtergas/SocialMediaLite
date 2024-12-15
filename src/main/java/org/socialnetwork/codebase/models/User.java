@@ -17,41 +17,26 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    private String firstName;
-
-    private String lastName;
-
-    private Date dateOfBirth;
-
 
     // All Relations where this user is the one who sends relation invitation
     @OneToMany(mappedBy = "userInit", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Relation> relationsInit = new HashSet<>();
+    private List<Relation> relationsInit = new ArrayList<>();
 
     // All Relations where this user is the one who receives relation invitation
     @OneToMany(mappedBy = "userRecv", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Relation> relationsRecv = new HashSet<>();
+    private List<Relation> relationsRecv = new ArrayList<>();
 
     public User(String username, String password) {
-        this("default", "default", new Date());
         this.username = username;
         this.password = password;
     }
 
-    public User(String username, String password, String firstName, String lastName, Date dateOfBirth) {
-        this(username, password);
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.dateOfBirth = dateOfBirth;
+    public User() {
     }
 
-    public User(String firstName, String lastName, Date dateOfBirth) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.dateOfBirth = dateOfBirth;
-    }
-    public User() {
-        this.firstName = "Empty";
+    @Override
+    public String toString() {
+        return this.username;
     }
 
     @Override
@@ -66,26 +51,27 @@ public class User {
     public int hashCode() {
         return Objects.hash(userID);
     }
-    @PreRemove
-    private void removeUser(){
-        if(relationsInit!=null) {
-            for (Relation relation : relationsInit) {
-                relation.getUserRecv().getRelationsRecv().remove(relation);
-                relation.setUserInit(null);
-                relation.setUserRecv(null);
-            }
-            relationsInit.clear();
-        }
 
-        if (relationsRecv != null) {
-            for(Relation relation : relationsRecv){
-                relation.getUserInit().getRelationsInit().remove(relation);
-                relation.setUserInit(null);
-                relation.setUserRecv(null);
-            }
-            relationsRecv.clear();
-        }
-    }
+//    @PreRemove
+//    private void removeUser(){
+//        if(relationsInit!=null) {
+//            for (Relation relation : relationsInit) {
+//                relation.getUserRecv().getRelationsRecv().remove(relation);
+//                relation.setUserInit(null);
+//                relation.setUserRecv(null);
+//            }
+//            relationsInit.clear();
+//        }
+//
+//        if (relationsRecv != null) {
+//            for(Relation relation : relationsRecv){
+//                relation.getUserInit().getRelationsInit().remove(relation);
+//                relation.setUserInit(null);
+//                relation.setUserRecv(null);
+//            }
+//            relationsRecv.clear();
+//        }
+//    }
 
     public UUID getUserID() {
         return userID;
@@ -107,37 +93,12 @@ public class User {
         this.username = username;
     }
 
-    public Set<Relation> getRelationsRecv() {
+    public List<Relation> getRelationsRecv() {
         return relationsRecv;
     }
 
-    public Set<Relation> getRelationsInit() {
+    public List<Relation> getRelationsInit() {
         return relationsInit;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public Date getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
     }
 
     public void addRelationInitiation(Relation relation) {

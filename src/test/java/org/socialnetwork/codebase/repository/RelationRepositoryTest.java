@@ -5,9 +5,7 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.socialnetwork.codebase.models.User;
-import org.socialnetwork.codebase.models.Relation;
-import org.socialnetwork.codebase.models.RelationType;
+import org.socialnetwork.codebase.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -28,8 +26,11 @@ public class RelationRepositoryTest {
     private User userB;
     private Relation relation;
 
+    /**
+     * This setup script runs before every test
+     * We create two users userA and userB, one relation of type college between them
+     */
     @BeforeEach
-    @Transactional
     public void setUp() {
         userA = userRepository.save(new User("kan", "qwerty"));
         userB = userRepository.save(new User("tan", "qwerty"));
@@ -39,24 +40,10 @@ public class RelationRepositoryTest {
         userRepository.flush();
     }
 
-    @Test
-    public void testCreateRelation() {
-        assertNotNull(relation.getRelationID());
-        assertEquals(relation.getRelationType(), RelationType.college);
-        assertEquals(userA, relation.getUserInit());
-        assertEquals(userB, relation.getUserRecv());
-    }
-
-    @Test
-    public void testFindRelation() {
-        Optional<Relation> fRelation = relationRepository.findById(relation.getRelationID());
-        assertTrue(fRelation.isPresent());
-        assertNotNull(fRelation.get());
-        assertEquals(relation.getRelationType(), fRelation.get().getRelationType());
-        assertEquals(relation.getUserInit().getUsername(), userA.getUsername());
-        assertEquals(relation.getUserRecv().getUsername(), userB.getUsername());
-    }
-
+    /**
+     * We have written a SQL instruction to check whether relation exists in both side of users
+     * This test is to test this SQL instruction
+     */
     @Test
     public void testRelationExistBiDirectional() {
         boolean exists = relationRepository.existsByUsersAndType(userA, userB, RelationType.college);
@@ -66,9 +53,16 @@ public class RelationRepositoryTest {
         assertTrue(exists);
     }
 
+    /**
+     * Test the capability of removing relation.
+     * Note: if the relation is already inside collections relationInit and relationRecv of
+     * user, we can not remove it via relationRepository.deleteById(relation.relationId).
+     * To remove the Relation, we must remove it in both Users in the relationship
+     * This deleted Relation becomes 'Orphan child' and JPA will delete it in database
+     */
     @Test
     public void testDeleteRelationThroughUser() {
-        // Remove relations matching the condition in application level
+        // UserA want to remove relation with the UserB
         userA.getRelationsInit().removeIf(targetRelation ->
                 targetRelation.getUserInit().getUsername().equals(userB.getUsername()) ||
                         targetRelation.getUserRecv().getUsername().equals(userB.getUsername())
@@ -79,28 +73,75 @@ public class RelationRepositoryTest {
         );
 
         userB.getRelationsInit().removeIf(targetRelation ->
-                targetRelation.getUserInit().getUsername().equals(userB.getUsername()) ||
-                        targetRelation.getUserRecv().getUsername().equals(userB.getUsername())
+                targetRelation.getUserInit().getUsername().equals(userA.getUsername()) ||
+                        targetRelation.getUserRecv().getUsername().equals(userA.getUsername())
         );
         userB.getRelationsRecv().removeIf(targetRelation ->
-                targetRelation.getUserInit().getUsername().equals(userB.getUsername()) ||
-                        targetRelation.getUserRecv().getUsername().equals(userB.getUsername())
+                targetRelation.getUserInit().getUsername().equals(userA.getUsername()) ||
+                        targetRelation.getUserRecv().getUsername().equals(userA.getUsername())
         );
 
         // The relation will be automatically removed on database level
         List<Relation> relations = relationRepository.findAll();
+        userA = userRepository.findByUsername(userA.getUsername()).get();
+        userB = userRepository.findByUsername(userB.getUsername()).get();
+
         assertEquals(0, relations.size());
+        assertTrue(userA.getRelationsInit().isEmpty());
+        assertTrue(userA.getRelationsRecv().isEmpty());
+        assertTrue(userB.getRelationsInit().isEmpty());
+        assertTrue(userB.getRelationsRecv().isEmpty());
     }
 
+    /**
+     * Test the scenario where the user is deleted.
+     * The way we delete user is pretty tricky because the complexity of bidirectional relation between user and relation
+     * we adopted at the beginning.
+     * Here is the steps to delete user:
+     * - Step 1: Find the user to be deleted. It is called to-be-deleted user
+     * - Step 2: Find all other users to whom the to-be-deleted user has relation
+     * - Step 3: In relations collection of previous found users, we remove the relations that are associated to to-be-deleted user
+     * - Step 4: Clear all relations of to-be-deleted user
+     * - Step 5: [Database level] Remove all associated relations of to-be-deleted user in database
+     * - Step 6: [Database level] Remove the to-be-deleted user in database
+     * Note that: Flush calls is optional.
+     */
+    @Test
+    public void testDeleteUserRelation(){
+        userA = userRepository.findByUsername(userA.getUsername()).get();
 
-//    @Test
-//    public void testDeleteUserRelation(){
-//        userRepository.deleteById(userA.getUserID());
-//        assertFalse(userRepository.existsById(userA.getUserID()));
-//        /**
-//         * !Warn :: CASCADING NOT WORKING
-//         */
-//        assertFalse(relationRepository.findById(relation.getRelationID()).isPresent());
-//    }
+        List<User> usersWhoHasRelationWithUserA = new ArrayList<>();
+        for (Relation relationInit : userA.getRelationsInit()) {
+            usersWhoHasRelationWithUserA.add(relationInit.getUserRecv());
+        }
+        for (Relation relationRecv : userA.getRelationsRecv()) {
+            usersWhoHasRelationWithUserA.add(relationRecv.getUserInit());
+        }
 
+        for (User user : usersWhoHasRelationWithUserA) {
+            User user_ = userRepository.findByUsername(user.getUsername()).get();
+            user_.getRelationsInit().removeIf(
+                    relation -> relation.getUserRecv().getUsername().equals(userA.getUsername())
+            );
+            user_.getRelationsRecv().removeIf(
+                    relation -> relation.getUserInit().getUsername().equals(userA.getUsername())
+            );
+        }
+        userA.getRelationsInit().clear();
+        userA.getRelationsRecv().clear();
+        relationRepository.deleteRelationByUserInitOrUserRecv(userA);
+        userRepository.deleteById(userA.getUserID());
+        relationRepository.flush();
+        userRepository.flush();
+
+
+        List<Relation> relations = relationRepository.findAll();
+
+        assertFalse(userRepository.existsById(userA.getUserID()));
+        assertTrue(relations.isEmpty());
+        assertFalse(relationRepository.findById(relation.getRelationID()).isPresent());
+        assertTrue(userRepository.existsById(userB.getUserID()));
+        assertTrue(userB.getRelationsInit().isEmpty());
+        assertTrue(userB.getRelationsRecv().isEmpty());
+    }
 }

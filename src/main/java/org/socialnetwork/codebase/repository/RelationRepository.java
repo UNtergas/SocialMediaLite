@@ -3,6 +3,7 @@ package org.socialnetwork.codebase.repository;
 import org.socialnetwork.codebase.models.User;
 import org.socialnetwork.codebase.models.RelationType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -20,4 +21,7 @@ public interface RelationRepository extends JpaRepository<Relation, UUID> {
                                   @Param("userRecv") User userRecv,
                                   @Param("type") RelationType type);
 
+     @Modifying
+     @Query("DELETE FROM Relation r WHERE r.userInit = :user OR r.userRecv = :user")
+     void deleteRelationByUserInitOrUserRecv(@Param("user") User user);
 }

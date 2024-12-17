@@ -47,12 +47,6 @@ public class Relation {
         return relationID.toString() + " " + relationType.toString() + " " + userInit.toString() + " " + userRecv.toString();
     }
 
-    @PreRemove
-    private void removeRelation() {
-        this.setUserInit(null);
-        this.setUserRecv(null);
-    }
-
     public Relation() {
         this.relationType = RelationType.friend;
     }

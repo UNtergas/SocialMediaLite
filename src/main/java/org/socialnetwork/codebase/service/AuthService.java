@@ -3,14 +3,13 @@ package org.socialnetwork.codebase.service;
 import org.socialnetwork.codebase.exceptions.UsernameAlreadyTakenException;
 import org.socialnetwork.codebase.models.User;
 import org.socialnetwork.codebase.repository.UserRepository;
-import org.socialnetwork.codebase.service.interfaces.AuthServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class AuthService implements AuthServiceInterface {
+public class AuthService {
     private final UserRepository userRepository;
 
     @Autowired
@@ -18,7 +17,6 @@ public class AuthService implements AuthServiceInterface {
         this.userRepository = userRepository;
     }
 
-    @Override
     public User registerUser(String username, String password) {
         if (userRepository.findByUsername(username).isPresent()) {
             throw new UsernameAlreadyTakenException("Username is already taken");
@@ -27,7 +25,6 @@ public class AuthService implements AuthServiceInterface {
         return this.userRepository.save(user);
     }
 
-    @Override
     public User authenticateUser(String username, String password) {
         Optional<User> userOptional = this.userRepository.findByUsername(username);
         if(userOptional.isPresent() && userOptional.get().getPassword().equals(password)) {

@@ -3,7 +3,6 @@ package org.socialnetwork.codebase.models;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import java.util.Date;
 
 public class RelationModelTest {
     private User user;
@@ -14,11 +13,11 @@ public class RelationModelTest {
     public void setUp() {
         user = new User("kan", "qwerty");
         user2 = new User("tan", "qwerty");
-        relation = new Relation(RelationType.friend, user, user2);
+        relation = new Relation(RelationType.FRIEND, user, user2);
     }
     @Test
     public void testRelationInit() {
-        assertEquals(RelationType.friend, relation.getRelationType());
+        assertEquals(RelationType.FRIEND, relation.getRelationType());
         assertEquals(user,relation.getUserInit());
         assertEquals(user2,relation.getUserRecv());
 
@@ -27,7 +26,7 @@ public class RelationModelTest {
     }
     @Test
     public void testSetRelationType(){
-        relation.setRelationType(RelationType.college);
-        assertEquals(RelationType.college,relation.getRelationType());
+        relation.setRelationType(RelationType.COLLEGE);
+        assertEquals(RelationType.COLLEGE,relation.getRelationType());
     }
 }

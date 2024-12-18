@@ -48,7 +48,7 @@ public class Relation {
     }
 
     public Relation() {
-        this.relationType = RelationType.friend;
+        this.relationType = RelationType.FRIEND;
     }
 
     public UUID getRelationID() {

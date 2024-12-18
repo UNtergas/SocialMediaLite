@@ -17,6 +17,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = true)
+    private String description;
+
 
     // All Relations where this user is the one who sends relation invitation
     @OneToMany(mappedBy = "userInit", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -25,6 +28,12 @@ public class User {
     // All Relations where this user is the one who receives relation invitation
     @OneToMany(mappedBy = "userRecv", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Relation> relationsRecv = new ArrayList<>();
+
+    public User(String username, String password, String description) {
+        this.username = username;
+        this.password = password;
+        this.description = description;
+    }
 
     public User(String username, String password) {
         this.username = username;
@@ -52,27 +61,6 @@ public class User {
         return Objects.hash(userID);
     }
 
-//    @PreRemove
-//    private void removeUser(){
-//        if(relationsInit!=null) {
-//            for (Relation relation : relationsInit) {
-//                relation.getUserRecv().getRelationsRecv().remove(relation);
-//                relation.setUserInit(null);
-//                relation.setUserRecv(null);
-//            }
-//            relationsInit.clear();
-//        }
-//
-//        if (relationsRecv != null) {
-//            for(Relation relation : relationsRecv){
-//                relation.getUserInit().getRelationsInit().remove(relation);
-//                relation.setUserInit(null);
-//                relation.setUserRecv(null);
-//            }
-//            relationsRecv.clear();
-//        }
-//    }
-
     public UUID getUserID() {
         return userID;
     }
@@ -99,6 +87,14 @@ public class User {
 
     public List<Relation> getRelationsInit() {
         return relationsInit;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void addRelationInitiation(Relation relation) {

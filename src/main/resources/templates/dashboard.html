@@ -2,24 +2,169 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Dashboard</title>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Flex container for graph and connect section */
+        .flex-container {
+            display: flex;
+            justify-content: space-between; /* Place items with space between */
+            align-items: flex-start; /* Align items at the top */
+            gap: 20px; /* Space between items */
+            /*padding: 20px;*/
+        }
+
+        #network-graph-section {
+            width: 50%;       /* Half of the container */
+            height: 50vh;     /* Adjust height */
+        }
+
+        #network {
+            width: 100%;       /* Half of the container */
+            height: 100%;     /* Adjust height */
+            border: 1px solid #ccc; /* Optional border for clarity */
+        }
+
+        .connect-section {
+            width: 45%;       /* Slightly less width */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 8px;
+        }
+    </style>
+
+    <script src="https://cdn.anychart.com/releases/8.12.1/js/anychart-core.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.12.1/js/anychart-graph.min.js"></script>
 </head>
 <body>
-<h1>Dashboard</h1>
+<h1>Social Analyser</h1>
 <div th:if="${currentUser != null}">
-    <p>Welcome, <span th:text="${currentUser.firstName}"></span>!</p>
+    <p>Hello, <span th:text="${currentUser.username}"></span>! 🕵🏻</p>
     <a th:href="@{/auth/logout}">Logout</a>
-    <h2>All users:</h2>
-    <ul>
-        <li th:each="user : ${users}">
-            <span>Username: <span th:text="${user.username}"></span></span>,
-            <span>Firstname: <span th:text="${user.firstName}"></span></span>,
-            <span>Lastname: <span th:text="${user.lastName}"></span></span>
-        </li>
-    </ul>
+    <br/>
+    <br/>
+
+    <div class="flex-container">
+        <!-- Graph Section -->
+        <div id="network-graph-section">
+            <div id="network"></div>
+        </div>
+
+        <!-- Connect Section -->
+        <div class="connect-section">
+            <h2>Connect to Other Users</h2>
+            <form th:action="@{/connect}" method="post">
+                <table>
+                    <tr>
+                        <th>Username</th>
+                        <th>Relation Type</th>
+                        <th>Action</th>
+                    </tr>
+                    <tr th:each="user : ${usersNotConnectedToCurrentUser}">
+                        <!-- Username -->
+                        <td th:text="${user.username}"></td>
+
+                        <!-- Relation Type Dropdown -->
+                        <td>
+                            <label>
+                                <select name="relationType">
+                                    <option th:each="type : ${relationTypes}"
+                                            th:value="${type}"
+                                            th:text="${type}">Type</option>
+                                </select>
+                            </label>
+                        </td>
+
+                        <!-- Connect Button -->
+                        <td>
+                            <button type="submit" name="username" th:value="${user.username}">
+                                Connect
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
 </div>
 <div th:if="${currentUser == null}">
     <p>Please register or login to see all other users !</p>
     <a th:href="@{/auth/login}">Login</a>
 </div>
+
+<!-- AnyChart Graph Rendering Script -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    anychart.onDocumentReady(function () {
+        const nodesData = [];
+        const edgesData = [];
+
+        // Add users as nodes
+        const users = /*[[${users}]]*/ [];
+        users.forEach(user => {
+            nodesData.push({ id: user.username, name: user.username });
+        });
+
+        // Add relations as edges
+        const relations = /*[[${relations}]]*/ [];
+        relations.forEach(relation => {
+            edgesData.push({
+                from: relation.usernameInit,
+                to: relation.usernameRecv,
+                label: relation.relationType
+            });
+        });
+
+        // Render the graph
+        const graphData = { nodes: nodesData, edges: edgesData };
+        const chart = anychart.graph(graphData);
+
+        // enable node labels:
+        const nodes = chart.nodes();
+        nodes.labels().enabled(true);
+
+        // customize node tooltips:
+        nodes.tooltip().useHtml(true);
+        nodes.tooltip().format(function(e){
+            const name = e.getData("name");
+            return `<b>${name}</b>`
+        });
+
+        // customize edge tooltips:
+        var edges = chart.edges();
+        edges.tooltip().useHtml(true);
+        edges.tooltip().format(function(e){
+            const label = e.getData("label");
+            return `<b>${label}</b>`
+        })
+
+        // customize the edge stroke:
+        edges.stroke("lightblue", 2, "10 5")
+        // set the chart title:
+        chart.title("Connection Network");
+        // set the container id:
+        chart.container("network");
+        // initiate drawing the chart:
+        chart.draw();
+    });
+    /*]]>*/
+</script>
+
 </body>
 </html>

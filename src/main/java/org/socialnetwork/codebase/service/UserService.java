@@ -34,6 +34,22 @@ public class UserService {
                 .toList();
     }
 
+    public List<User> getUsersWithNoRelations() {
+        return userRepository.findUsersWithNoRelations();
+    }
+
+    public List<User> getUserWithRelationToSpecificUser(String username) {
+        return userRepository.findUsersWithRelationToSpecificUser(username);
+    }
+
+    public List<User> getUserByDescription(String keyword) {
+        return userRepository.findByDescriptionContaining(keyword);
+    }
+
+    public List<User> getUsersWithMoreThanOrEqualsToNRelations(int count) {
+        return userRepository.findUsersWithMoreThanOrEqualsToNRelations(count);
+    }
+
 
     public void deleteUser(UUID userID) {
         userRepository.deleteById(userID);

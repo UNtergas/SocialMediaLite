@@ -57,15 +57,101 @@
 <div th:if="${currentUser != null}">
     <p>Hello, <span th:text="${currentUser.username}"></span>! 🕵🏻</p>
     <a th:href="@{/auth/logout}">Logout</a>
+
+
+
     <br/>
     <br/>
+    <div>
+        <!-- Toggle Button or Choice Box -->
+        <label for="view-select">Choose View:</label>
+        <select id="view-select" onchange="toggleView()">
+            <option value="graph">Graph Section</option>
+            <option value="specific">Get relation with me</option>
+            <option value="no">Get User With no relation</option>
+            <option value="description" th:selected="${param.view != null and param.view[0] =='description'}">Find user on description</option>
+            <option value="count" th:selected="${param.view != null and param.view[0] =='count'}">Find user that have N relation</option>
+        </select>
+    </div>
 
     <div class="flex-container">
+
+
+
         <!-- Graph Section -->
-        <div id="network-graph-section">
+        <div id="network-graph-section" >
             <div id="network"></div>
         </div>
+        <!-- Optional User Displayer -->
+        <div id="user-with-specific-relation" style="display: none;">
+            <h2>Users with relation to me</h2>
+            <table>
+                <tr th:each="user: ${usersWithRelationToSpecificUser}">
+                    <td th:text="${user.username}"></td>
+                </tr>
+            </table>
+        </div>
+        <div id="user-with-no-relation" style="display: none;">
+            <h2>Users with no relation</h2>
+            <table>
+                <tr th:each="user: ${usersWithNoRelations}">
+                    <td th:text="${user.username}"></td>
+                </tr>
+            </table>
+        </div>
+        <div id="user-from-description" style="display: none;">
+            <!-- Search Form -->
+            <form th:action="@{/description}" method="post">
+                <h2>Search User by Description</h2>
+                <label for="keyword">Search by Description:</label>
+                <input type="text" id="keyword" name="keyword" placeholder="Enter a keyword" required>
+                <button type="submit">Search</button>
+            </form>
 
+            <!-- Results Display -->
+            <div >
+                <h3>Search Results:</h3>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Username</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${userFromReq}">
+                        <td th:text="${user.username}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="user-from-N-relation" style="display: none;">
+            <!-- Search Form -->
+            <form th:action="@{/count}" method="post">
+                <h2>Search User That have N relation</h2>
+                <label for="relationCount">Enter the Relation Count:</label>
+                <input type="number" id="relationCount" name="relationCount" placeholder="Enter a number" required min="1">
+                <button type="submit">Search</button>
+            </form>
+
+            <!-- Results Display -->
+            <div >
+                <h3>Search Results:</h3>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Username</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${userFromReq}">
+                        <td th:text="${user.username}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
         <!-- Connect Section -->
         <div class="connect-section">
             <h2>Connect to Other Users</h2>
@@ -164,6 +250,51 @@
         chart.draw();
     });
     /*]]>*/
+</script>
+<!-- Toggle Script -->
+<script>
+    function toggleView() {
+        const selectedView = document.getElementById('view-select').value;
+        const graphSection = document.getElementById('network-graph-section');
+        const usersWithRelationSpecific = document.getElementById('user-with-specific-relation');
+        const userFromDescription = document.getElementById('user-from-description');
+        const userWithNoRelation = document.getElementById('user-with-no-relation');
+        const userFromNRelation = document.getElementById('user-from-N-relation');
+
+        graphSection.style.display = 'none';
+        usersWithRelationSpecific.style.display = 'none';
+        userFromDescription.style.display = 'none';
+        userWithNoRelation.style.display = 'none';
+        userFromNRelation.style.display = 'none';
+        // Use switch case to handle the selected view
+        switch (selectedView) {
+            case 'graph':
+                graphSection.style.display = 'block';
+                break;
+
+            case 'specific':
+                usersWithRelationSpecific.style.display = 'block';
+                break;
+
+            case 'description':
+                userFromDescription.style.display = 'block';
+                break;
+
+            case 'no':
+                userWithNoRelation.style.display = 'block';
+                break;
+
+            case 'count':
+                userFromNRelation.style.display = 'block';
+                break;
+
+            }
+
+
+    }
+    window.onload = function () {
+        toggleView(); // Call toggleView to update visibility based on the selected dropdown value
+    };
 </script>
 
 </body>

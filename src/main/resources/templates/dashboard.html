@@ -69,10 +69,10 @@
             <option value="graph">Network graph (connected components)</option>
             <option value="allUsers">Find all users</option>
             <option value="specific">Find users having relation with me</option>
-            <option value="no">Find users with no relation</option>
+            <option value="no">Find users having no relation</option>
             <option value="description" th:selected="${param.view != null and param.view[0] =='description'}">Find users having keyword in description</option>
             <option value="count" th:selected="${param.view != null and param.view[0] =='count'}">Find users having >= N relation</option>
-            <option value="multiple">Find users with multiple relation</option>
+            <option value="multiple">Find users having multiple relation type</option>
         </select>
     </div>
 

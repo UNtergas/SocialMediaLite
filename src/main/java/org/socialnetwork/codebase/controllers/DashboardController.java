@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,11 +53,28 @@ public class DashboardController {
                     .map(user -> new UserDTO(user.getUserID(), user.getUsername()))
                     .toList();
 
+        List<UserDTO> userWithRelationToSpecificUserDTOs =
+                userService.getUserWithRelationToSpecificUser(currentUser.getUsername())
+                        .stream()
+                        .map(user -> new UserDTO(user.getUserID(), user.getUsername()))
+                        .toList();
+        List<UserDTO> userWithNoRelations = userService.getUsersWithNoRelations()
+                .stream()
+                .map(user -> new UserDTO(user.getUserID(), user.getUsername()))
+                .toList();
+        List<UserDTO> userWithMultipleRelationTypes = userService.getUserWithMultipleRelationTypes()
+                .stream()
+                .map(user -> new UserDTO(user.getUserID(), user.getUsername()))
+                .toList();
+
         model.addAttribute("users", userDTOs);
         model.addAttribute("relations", relationDTOs);
         model.addAttribute("usersNotConnectedToCurrentUser", usersNotConnectedToCurrentUserDTOs);
         model.addAttribute("relationTypes", RelationType.values());
         model.addAttribute("currentUser", currentUser);
+        model.addAttribute("usersWithRelationToSpecificUser", userWithRelationToSpecificUserDTOs);
+        model.addAttribute("usersWithNoRelations", userWithNoRelations);
+        model.addAttribute("usersWithMultipleRelation", userWithMultipleRelationTypes);
         return "dashboard";
     }
 
@@ -82,4 +100,40 @@ public class DashboardController {
         return "redirect:/";
     }
 
+    @PostMapping("/description")
+    public String findUserByDescription(
+            @SessionAttribute(value = "currentUser", required = false) User currentUser,
+            @RequestParam("keyword") String keyword,
+            RedirectAttributes redirectAttributes
+    ){
+        if (currentUser == null) {
+            return "redirect:/auth/login"; // Redirect if the user is not logged in
+        }
+
+        List<UserDTO> userDTOs = userService.getUserByDescription(keyword)
+                .stream()
+                .map(user -> new UserDTO(user.getUserID(), user.getUsername()))
+                .toList();
+
+        redirectAttributes.addFlashAttribute("userFromReq", userDTOs);
+        return "redirect:/?view=description";
+    }
+    @PostMapping("/count")
+    public String findUserWithMoreThanOrEqualsToNRelations(
+            @SessionAttribute(value = "currentUser", required = false) User currentUser,
+            @RequestParam("relationCount") int count,
+            RedirectAttributes redirectAttributes
+    ){
+        if (currentUser == null) {
+            return "redirect:/auth/login"; // Redirect if the user is not logged in
+        }
+
+        List<UserDTO> userDTOs = userService.getUsersWithMoreThanOrEqualsToNRelations(count)
+                .stream()
+                .map(user -> new UserDTO(user.getUserID(), user.getUsername()))
+                .toList();
+
+        redirectAttributes.addFlashAttribute("userFromReq", userDTOs);
+        return "redirect:/?view=count";
+    }
 }

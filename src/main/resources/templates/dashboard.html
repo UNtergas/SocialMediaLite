@@ -15,7 +15,7 @@
             display: flex;
             justify-content: space-between; /* Place items with space between */
             align-items: flex-start; /* Align items at the top */
-            gap: 20px; /* Space between items */
+            gap: 10px; /* Space between items */
             /*padding: 20px;*/
         }
 
@@ -57,28 +57,22 @@
 <div th:if="${currentUser != null}">
     <p>Hello, <span th:text="${currentUser.username}"></span>! 🕵🏻</p>
     <a th:href="@{/auth/logout}">Logout</a>
-
-
-
     <br/>
     <br/>
     <div>
         <!-- Toggle Button or Choice Box -->
         <label for="view-select">Choose View:</label>
         <select id="view-select" onchange="toggleView()">
-            <option value="graph">Graph Section</option>
-            <option value="specific">Get relation with me</option>
-            <option value="no">Get User With no relation</option>
-            <option value="description" th:selected="${param.view != null and param.view[0] =='description'}">Find user on description</option>
-            <option value="count" th:selected="${param.view != null and param.view[0] =='count'}">Find user that have N relation</option>
-            <option value="multiple">Get user with multiple relation </option>
+            <option value="graph">Network graph (connected components)</option>
+            <option value="specific">Find users having relation with me</option>
+            <option value="no">Find users with no relation</option>
+            <option value="description" th:selected="${param.view != null and param.view[0] =='description'}">Find users having keyword in description</option>
+            <option value="count" th:selected="${param.view != null and param.view[0] =='count'}">Find users having >= N relation</option>
+            <option value="multiple">Find users with multiple relation</option>
         </select>
     </div>
 
     <div class="flex-container">
-
-
-
         <!-- Graph Section -->
         <div id="network-graph-section" >
             <div id="network"></div>
@@ -163,7 +157,7 @@
         </div>
         <!-- Connect Section -->
         <div class="connect-section">
-            <h2>Connect to Other Users</h2>
+            <h2>These users are not in your network. Connect them?</h2>
             <form th:action="@{/connect}" method="post">
                 <table>
                     <tr>
@@ -269,7 +263,6 @@
         const userFromDescription = document.getElementById('user-from-description');
         const userWithNoRelation = document.getElementById('user-with-no-relation');
         const userFromNRelation = document.getElementById('user-from-N-relation');
-
         const userWithMultipleRelation = document.getElementById('user-with-multiple-relation');
 
         graphSection.style.display = 'none';

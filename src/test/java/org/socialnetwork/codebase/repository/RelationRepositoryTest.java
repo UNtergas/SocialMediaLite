@@ -33,8 +33,8 @@ public class RelationRepositoryTest {
     public void setUp() {
         userA = userRepository.save(new User("kan", "qwerty"));
         userB = userRepository.save(new User("tan", "qwerty"));
-
         relation = relationRepository.save(new Relation(RelationType.COLLEGE, userA, userB));
+
         relationRepository.flush();
         userRepository.flush();
     }
@@ -60,7 +60,7 @@ public class RelationRepositoryTest {
      * This deleted Relation becomes 'Orphan child' and JPA will delete it in database
      */
     @Test
-    public void testDeleteRelationThroughUser() {
+    public void ifUserRemoveRelationsInAppRelationInDatabaseMustBeDeleted() {
         // UserA want to remove relation with the UserB
         userA.getRelationsInit().removeIf(targetRelation ->
                 targetRelation.getUserInit().getUsername().equals(userB.getUsername()) ||
@@ -81,11 +81,10 @@ public class RelationRepositoryTest {
         );
 
         // The relation will be automatically removed on database level
-        List<Relation> relations = relationRepository.findAll();
         userA = userRepository.findByUsername(userA.getUsername()).get();
         userB = userRepository.findByUsername(userB.getUsername()).get();
 
-        assertEquals(0, relations.size());
+        assertFalse(relationRepository.findById(relation.getRelationID()).isPresent());
         assertTrue(userA.getRelationsInit().isEmpty());
         assertTrue(userA.getRelationsRecv().isEmpty());
         assertTrue(userB.getRelationsInit().isEmpty());
@@ -106,7 +105,7 @@ public class RelationRepositoryTest {
      * Note that: Flush calls is optional.
      */
     @Test
-    public void testDeleteUserRelation(){
+    public void ifUserIsDeletedAssociatedRelationsMustBeDeleted(){
         userA = userRepository.findByUsername(userA.getUsername()).get();
 
         List<User> usersWhoHasRelationWithUserA = new ArrayList<>();
@@ -133,11 +132,7 @@ public class RelationRepositoryTest {
         relationRepository.flush();
         userRepository.flush();
 
-
-        List<Relation> relations = relationRepository.findAll();
-
         assertFalse(userRepository.existsById(userA.getUserID()));
-        assertTrue(relations.isEmpty());
         assertFalse(relationRepository.findById(relation.getRelationID()).isPresent());
         assertTrue(userRepository.existsById(userB.getUserID()));
         assertTrue(userB.getRelationsInit().isEmpty());

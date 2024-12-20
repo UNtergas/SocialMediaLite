@@ -15,11 +15,10 @@ import java.util.UUID;
 public interface RelationRepository extends JpaRepository<Relation, UUID> {
 
      @Query("SELECT COUNT(r) > 0 FROM Relation r WHERE " +
-           "(r.userInit = :userInit AND r.userRecv = :userRecv AND r.relationType = :type) " +
-           "OR (r.userInit = :userRecv AND r.userRecv = :userInit AND r.relationType = :type)")
-     boolean existsByUsersAndType(@Param("userInit") User userInit,
-                                  @Param("userRecv") User userRecv,
-                                  @Param("type") RelationType type);
+           "(r.userInit = :userInit AND r.userRecv = :userRecv) " +
+           "OR (r.userInit = :userRecv AND r.userRecv = :userInit)")
+     boolean existsByUsers(@Param("userInit") User userInit,
+                           @Param("userRecv") User userRecv);
 
      @Modifying
      @Query("DELETE FROM Relation r WHERE r.userInit = :user OR r.userRecv = :user")

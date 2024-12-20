@@ -45,10 +45,10 @@ public class RelationRepositoryTest {
      */
     @Test
     public void testRelationExistBiDirectional() {
-        boolean exists = relationRepository.existsByUsersAndType(userA, userB, RelationType.COLLEGE);
+        boolean exists = relationRepository.existsByUsers(userA, userB);
         assertTrue(exists);
 
-        exists = relationRepository.existsByUsersAndType(userB, userA, RelationType.COLLEGE);
+        exists = relationRepository.existsByUsers(userB, userA);
         assertTrue(exists);
     }
 

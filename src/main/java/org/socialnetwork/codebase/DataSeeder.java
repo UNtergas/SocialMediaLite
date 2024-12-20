@@ -30,33 +30,27 @@ public class DataSeeder implements CommandLineRunner {
         if (this.userRepository.count() == 0) {
             // Seed 10 users with different details
             List<User> users = Arrays.asList(
-                    new User("john_doe", "qwertyuiop", "I am John Doe"),
-                    new User("jane_doe", "qwertyuiop"),
-                    new User("sam_smith", "qwertyuiop"),
-                    new User("emma_jones", "qwertyuiop"),
-                    new User("mike_brown", "qwertyuiop"),
-                    new User("lisa_white", "qwertyuiop", "I am Lisa White"),
-                    new User("chris_black", "qwertyuiop"),
-                    new User("sara_young", "qwertyuiop"),
-                    new User("david_green", "qwertyuiop"),
-                    new User("nancy_clark", "qwertyuiop")
+                    new User("john_doe", "qwertyuiop", "I am John Doe, a software developer with a passion for technology."),
+                    new User("jane_doe", "qwertyuiop", "Hello! I'm Jane, a graphic designer who loves creativity."),
+                    new User("sam_smith", "qwertyuiop", "Hi, I'm Sam, a project manager with a knack for organization."),
+                    new User("emma_jones", "qwertyuiop", "I'm Emma, a data analyst who finds patterns in numbers."),
+                    new User("mike_brown", "qwertyuiop", "Hey, I’m Mike, an entrepreneur building innovative solutions."),
+                    new User("lisa_white", "qwertyuiop", "I am Lisa White, a writer and storyteller."),
+                    new User("chris_black", "qwertyuiop", "Chris here, a fitness enthusiast and wellness coach."),
+                    new User("sara_young", "qwertyuiop", "Hi, I'm Sara, a digital marketer exploring the online world."),
+                    new User("david_green", "qwertyuiop", "David Green, a photographer capturing life's moments."),
+                    new User("nancy_clark", "qwertyuiop", "Hello, I'm Nancy, a teacher who loves inspiring young minds.")
             );
             userRepository.saveAll(users);
 
             relationService.createRelationByUsernames(RelationType.FRIEND, "john_doe", "jane_doe");
             relationService.createRelationByUsernames(RelationType.CLOSE, "emma_jones", "mike_brown");
             relationService.createRelationByUsernames(RelationType.FRIEND, "lisa_white", "chris_black");
-            relationService.createRelationByUsernames(RelationType.COLLEGE, "chris_black", "lisa_white");
             relationService.createRelationByUsernames(RelationType.CLOSE, "david_green", "nancy_clark");
-            relationService.createRelationByUsernames(RelationType.FRIEND, "john_doe", "david_green");
+            relationService.createRelationByUsernames(RelationType.COLLEGE, "john_doe", "david_green");
+            relationService.createRelationByUsernames(RelationType.COLLEGE, "john_doe", "chris_black");
 
             System.out.println("Database seeded with sample users and relations.");
-            System.out.println("================== Query testing ==================");
-            System.out.println("Users with keyword 'I am' in description: " + userRepository.findByDescriptionContaining("I am"));
-            System.out.println("Users with no relation: " + userRepository.findUsersWithNoRelations());
-            System.out.println("Users with number of relations more than 2: " + userRepository.findUsersWithMoreThanOrEqualsToNRelations(2));
-            System.out.println("Users with relations to john_doe: " + userRepository.findUsersWithRelationToSpecificUser("john_doe"));
-            System.out.println("Users with multiple relation types: " + userRepository.findUsersWithMultipleRelationTypes());
         }
     }
 

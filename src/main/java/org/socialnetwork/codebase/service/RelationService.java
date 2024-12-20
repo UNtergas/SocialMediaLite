@@ -39,8 +39,8 @@ public class RelationService {
         return allRelations;
     }
 
-    boolean relationExists(User user1, User user2, RelationType relationType) {
-        return relationRepository.existsByUsersAndType(user1, user2, relationType);
+    boolean relationExists(User user1, User user2) {
+        return relationRepository.existsByUsers(user1, user2);
     }
 
 
@@ -56,7 +56,7 @@ public class RelationService {
             user1 = user2;
             user2 = temp;
         }
-        if(!relationExists(user1, user2, relationType) && !user1.equals(user2)) {
+        if(!relationExists(user1, user2) && !user1.equals(user2)) {
             Relation relation = new Relation(relationType, user1, user2);
             relationRepository.save(relation);
             return relation;

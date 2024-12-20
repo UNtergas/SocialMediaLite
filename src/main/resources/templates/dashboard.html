@@ -253,7 +253,8 @@
             edgesData.push({
                 from: relation.usernameInit,
                 to: relation.usernameRecv,
-                label: relation.relationType
+                label: relation.relationType.toString().toLowerCase(),
+                key: `${relation.usernameInit}-${relation.usernameRecv}-${relation.label}`,
             });
         });
 
@@ -274,6 +275,11 @@
 
         // customize edge tooltips:
         var edges = chart.edges();
+        var labels = chart.edges().labels();
+        labels.enabled(true);
+        labels.format('{%label}');
+        // labels.fontSize(7);
+
         edges.tooltip().useHtml(true);
         edges.tooltip().format(function(e){
             const label = e.getData("label");

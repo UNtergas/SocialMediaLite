@@ -34,3 +34,8 @@ The application will be run on port 8080: http://localhost:8080
 - path: http://localhost:8080/h2-console
 - username: root
 - password: root
+
+#### Application preview
+![img.png](img.png)
+![img_2.png](img_2.png)
+![img_1.png](img_1.png)

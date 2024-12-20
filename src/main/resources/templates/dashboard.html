@@ -33,6 +33,10 @@
         .connect-section {
             width: 45%;       /* Slightly less width */
         }
+        .connect-section h2 {
+            padding-top: 0;
+            margin-top: 0;
+        }
 
         table {
             width: 100%;
@@ -64,6 +68,7 @@
         <label for="view-select">Choose View:</label>
         <select id="view-select" onchange="toggleView()">
             <option value="graph">Network graph (connected components)</option>
+            <option value="allUsers">Find all users</option>
             <option value="specific">Find users having relation with me</option>
             <option value="no">Find users with no relation</option>
             <option value="description" th:selected="${param.view != null and param.view[0] =='description'}">Find users having keyword in description</option>
@@ -78,27 +83,55 @@
             <div id="network"></div>
         </div>
         <!-- Optional User Displayer -->
+        <div id="all-users" style="display: none;">
+            <h2>All users</h2>
+            <table>
+                <tr>
+                    <th th:text="username"></th>
+                    <th th:text="description"></th>
+                </tr>
+                <tr th:each="user: ${users}">
+                    <td th:text="${user.username}"></td>
+                    <td th:text="${user.description}"></td>
+                </tr>
+            </table>
+        </div>
         <div id="user-with-specific-relation" style="display: none;">
             <h2>Users with relation to me</h2>
             <table>
+                <tr>
+                    <th th:text="username"></th>
+                    <th th:text="description"></th>
+                </tr>
                 <tr th:each="user: ${usersWithRelationToSpecificUser}">
                     <td th:text="${user.username}"></td>
+                    <td th:text="${user.description}"></td>
                 </tr>
             </table>
         </div>
         <div id="user-with-no-relation" style="display: none;">
             <h2>Users with no relation</h2>
             <table>
+                <tr>
+                    <th th:text="username"></th>
+                    <th th:text="description"></th>
+                </tr>
                 <tr th:each="user: ${usersWithNoRelations}">
                     <td th:text="${user.username}"></td>
+                    <td th:text="${user.description}"></td>
                 </tr>
             </table>
         </div>
         <div id="user-with-multiple-relation" style="display: none;">
             <h2>Users with multiple relation</h2>
             <table>
+                <tr>
+                    <th th:text="username"></th>
+                    <th th:text="description"></th>
+                </tr>
                 <tr th:each="user: ${usersWithMultipleRelation}">
                     <td th:text="${user.username}"></td>
+                    <td th:text="${user.description}"></td>
                 </tr>
             </table>
         </div>
@@ -117,12 +150,14 @@
                 <table>
                     <thead>
                     <tr>
-                        <th>Username</th>
+                        <th th:text="username"></th>
+                        <th th:text="description"></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="user : ${userFromReq}">
                         <td th:text="${user.username}"></td>
+                        <td th:text="${user.description}"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -143,12 +178,14 @@
                 <table>
                     <thead>
                     <tr>
-                        <th>Username</th>
+                        <th th:text="username"></th>
+                        <th th:text="description"></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="user : ${userFromReq}">
                         <td th:text="${user.username}"></td>
+                        <td th:text="${user.description}"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -259,6 +296,7 @@
     function toggleView() {
         const selectedView = document.getElementById('view-select').value;
         const graphSection = document.getElementById('network-graph-section');
+        const allUsers = document.getElementById('all-users');
         const usersWithRelationSpecific = document.getElementById('user-with-specific-relation');
         const userFromDescription = document.getElementById('user-from-description');
         const userWithNoRelation = document.getElementById('user-with-no-relation');
@@ -266,15 +304,21 @@
         const userWithMultipleRelation = document.getElementById('user-with-multiple-relation');
 
         graphSection.style.display = 'none';
+        allUsers.style.display = 'none';
         usersWithRelationSpecific.style.display = 'none';
         userFromDescription.style.display = 'none';
         userWithNoRelation.style.display = 'none';
         userFromNRelation.style.display = 'none';
         userWithMultipleRelation.style.display = 'none';
+
         // Use switch case to handle the selected view
         switch (selectedView) {
             case 'graph':
                 graphSection.style.display = 'block';
+                break;
+
+            case 'allUsers':
+                allUsers.style.display = 'block';
                 break;
 
             case 'specific':

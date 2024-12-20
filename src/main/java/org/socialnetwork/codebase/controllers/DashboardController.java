@@ -35,7 +35,7 @@ public class DashboardController {
         }
         List<UserDTO> userDTOs = userService.getAllUsers()
                 .stream()
-                .map(user -> new UserDTO(user.getUserID(), user.getUsername()))
+                .map(user -> new UserDTO(user.getUserID(), user.getUsername(), user.getDescription()))
                 .toList();
 
         List<RelationDTO> relationDTOs = relationService.getAllRelations()
@@ -50,21 +50,21 @@ public class DashboardController {
         List<UserDTO> usersNotConnectedToCurrentUserDTOs =
                 userService.getUsersNotConnectedToUser(currentUser.getUsername())
                     .stream()
-                    .map(user -> new UserDTO(user.getUserID(), user.getUsername()))
+                    .map(user -> new UserDTO(user.getUserID(), user.getUsername(), user.getDescription()))
                     .toList();
 
         List<UserDTO> userWithRelationToSpecificUserDTOs =
                 userService.getUserWithRelationToSpecificUser(currentUser.getUsername())
                         .stream()
-                        .map(user -> new UserDTO(user.getUserID(), user.getUsername()))
+                        .map(user -> new UserDTO(user.getUserID(), user.getUsername(), user.getDescription()))
                         .toList();
         List<UserDTO> userWithNoRelations = userService.getUsersWithNoRelations()
                 .stream()
-                .map(user -> new UserDTO(user.getUserID(), user.getUsername()))
+                .map(user -> new UserDTO(user.getUserID(), user.getUsername(), user.getDescription()))
                 .toList();
         List<UserDTO> userWithMultipleRelationTypes = userService.getUserWithMultipleRelationTypes()
                 .stream()
-                .map(user -> new UserDTO(user.getUserID(), user.getUsername()))
+                .map(user -> new UserDTO(user.getUserID(), user.getUsername(), user.getDescription()))
                 .toList();
 
         model.addAttribute("users", userDTOs);
@@ -112,7 +112,7 @@ public class DashboardController {
 
         List<UserDTO> userDTOs = userService.getUserByDescription(keyword)
                 .stream()
-                .map(user -> new UserDTO(user.getUserID(), user.getUsername()))
+                .map(user -> new UserDTO(user.getUserID(), user.getUsername(), user.getDescription()))
                 .toList();
 
         redirectAttributes.addFlashAttribute("userFromReq", userDTOs);
@@ -130,7 +130,7 @@ public class DashboardController {
 
         List<UserDTO> userDTOs = userService.getUsersWithMoreThanOrEqualsToNRelations(count)
                 .stream()
-                .map(user -> new UserDTO(user.getUserID(), user.getUsername()))
+                .map(user -> new UserDTO(user.getUserID(), user.getUsername(), user.getDescription()))
                 .toList();
 
         redirectAttributes.addFlashAttribute("userFromReq", userDTOs);

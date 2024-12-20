@@ -71,6 +71,7 @@
             <option value="no">Get User With no relation</option>
             <option value="description" th:selected="${param.view != null and param.view[0] =='description'}">Find user on description</option>
             <option value="count" th:selected="${param.view != null and param.view[0] =='count'}">Find user that have N relation</option>
+            <option value="multiple">Get user with multiple relation </option>
         </select>
     </div>
 
@@ -95,6 +96,14 @@
             <h2>Users with no relation</h2>
             <table>
                 <tr th:each="user: ${usersWithNoRelations}">
+                    <td th:text="${user.username}"></td>
+                </tr>
+            </table>
+        </div>
+        <div id="user-with-multiple-relation" style="display: none;">
+            <h2>Users with multiple relation</h2>
+            <table>
+                <tr th:each="user: ${usersWithMultipleRelation}">
                     <td th:text="${user.username}"></td>
                 </tr>
             </table>
@@ -261,11 +270,14 @@
         const userWithNoRelation = document.getElementById('user-with-no-relation');
         const userFromNRelation = document.getElementById('user-from-N-relation');
 
+        const userWithMultipleRelation = document.getElementById('user-with-multiple-relation');
+
         graphSection.style.display = 'none';
         usersWithRelationSpecific.style.display = 'none';
         userFromDescription.style.display = 'none';
         userWithNoRelation.style.display = 'none';
         userFromNRelation.style.display = 'none';
+        userWithMultipleRelation.style.display = 'none';
         // Use switch case to handle the selected view
         switch (selectedView) {
             case 'graph':
@@ -287,7 +299,9 @@
             case 'count':
                 userFromNRelation.style.display = 'block';
                 break;
-
+            case 'multiple':
+                userWithMultipleRelation.style.display = 'block';
+                break;
             }
 
 

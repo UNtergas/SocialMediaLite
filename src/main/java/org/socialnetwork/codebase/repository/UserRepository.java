@@ -42,6 +42,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query("SELECT u FROM User u WHERE SIZE(u.relationsInit) + SIZE(u.relationsRecv) >= :count")
     List<User> findUsersWithMoreThanOrEqualsToNRelations(@Param("count") int count);
 
+
     @Query("SELECT DISTINCT u FROM User u " +
             "JOIN Relation r1 ON u = r1.userInit OR u = r1.userRecv " +
             "JOIN Relation r2 ON u = r2.userInit OR u = r2.userRecv " +

@@ -62,6 +62,10 @@ public class DashboardController {
                 .stream()
                 .map(user -> new UserDTO(user.getUserID(), user.getUsername()))
                 .toList();
+        List<UserDTO> userWithMultipleRelationTypes = userService.getUserWithMultipleRelationTypes()
+                .stream()
+                .map(user -> new UserDTO(user.getUserID(), user.getUsername()))
+                .toList();
 
         model.addAttribute("users", userDTOs);
         model.addAttribute("relations", relationDTOs);
@@ -70,6 +74,7 @@ public class DashboardController {
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("usersWithRelationToSpecificUser", userWithRelationToSpecificUserDTOs);
         model.addAttribute("usersWithNoRelations", userWithNoRelations);
+        model.addAttribute("usersWithMultipleRelation", userWithMultipleRelationTypes);
         return "dashboard";
     }
 

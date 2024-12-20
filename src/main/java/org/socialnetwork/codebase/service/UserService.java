@@ -49,6 +49,9 @@ public class UserService {
     public List<User> getUsersWithMoreThanOrEqualsToNRelations(int count) {
         return userRepository.findUsersWithMoreThanOrEqualsToNRelations(count);
     }
+    public List<User> getUserWithMultipleRelationTypes() {
+        return userRepository.findUsersWithMultipleRelationTypes();
+    }
 
 
     public void deleteUser(UUID userID) {
